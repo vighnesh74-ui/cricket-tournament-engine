@@ -1,41 +1,138 @@
-# Cricket Tournament Match Scoreboard & Points Table Engine
+# Cricket Tournament Engine
 
-A Java 17 + Maven console application for recording cricket match results and generating a tournament points table with Net Run Rate (NRR).
+A lightweight **Java 17 + Maven** console application for managing cricket tournament results and generating points tables with Net Run Rate (NRR).
 
 ## Features
-- Register tournament teams.
-- Record completed match innings (runs, wickets, overs and balls).
-- Automatic win/tie/no-result points.
-- NRR calculation using actual balls faced/bowled.
-- ICC-style all-out handling: an all-out innings is treated as having used the full innings quota for NRR.
-- Points-table sorting: points (descending), then NRR (descending), then team name.
-- Input validation and duplicate-match protection.
-- JUnit 5 unit tests.
 
-## Run
-Requires JDK 17+ and Maven 3.9+.
+- Register teams with duplicate-name protection.
+- Record completed match innings and results.
+- Award 2 points for a win and 1 point per team for a tie.
+- Calculate NRR using actual legal balls.
+- Apply full-innings quota for all-out innings.
+- Rank teams by points, NRR and team name.
+- Validate match and innings data.
+- Automated unit tests using JUnit 5.
+
+## Tech Stack
+
+- **Language:** Java 17
+- **Build Tool:** Apache Maven
+- **Testing:** JUnit 5
+- **Architecture:** Layered Architecture
+
+## Project Structure
+
+```text
+cricket-tournament-engine/
+├── pom.xml
+├── README.md
+└── src/
+    ├── main/java/com/cricket/
+    │   ├── Main.java
+    │   ├── model/
+    │   │   ├── Team.java
+    │   │   ├── Innings.java
+    │   │   ├── Match.java
+    │   │   └── Standing.java
+    │   └── service/
+    │       └── TournamentEngine.java
+    └── test/java/com/cricket/service/
+        └── TournamentEngineTest.java
+```
+
+## Getting Started
+
+**Requirements:** JDK 17+ and Maven 3.9+.
+
+Clone the repository and navigate to the project directory:
+
+```bash
+git clone <repository-url>
+cd cricket-tournament-engine
+```
+
+Run the tests:
 
 ```bash
 mvn test
+```
+
+Build the application:
+
+```bash
 mvn package
+```
+
+Run the application:
+
+```bash
 java -jar target/cricket-tournament-engine-1.0.0.jar
 ```
 
-If your Maven setup does not create an executable jar automatically, run:
+Alternatively:
+
 ```bash
 mvn exec:java -Dexec.mainClass="com.cricket.Main"
 ```
-(or run `com.cricket.Main` from your IDE).
 
-## Overs format
-Enter overs as whole overs plus balls, e.g. `19.4` means 19 overs and 4 balls, not a decimal fraction. The configured innings quota is used to validate innings and calculate NRR. For an all-out innings, NRR uses the full quota.
+## How It Works
+
+The application follows a three-layer architecture:
+
+| Layer | Responsibility |
+|---|---|
+| Model | Teams, innings, matches and standings |
+| Service | Tournament management, scoring and NRR |
+| Application | Console menu and user interaction |
+
+### Net Run Rate
+
+NRR is calculated as:
+
+```text
+NRR = (Runs Scored / Overs Faced)
+    - (Runs Conceded / Overs Bowled)
+```
+
+Overs are calculated using legal balls rather than decimal fractions. An all-out innings is counted using the full innings quota.
+
+**Overs notation:** `19.4` represents 19 overs and 4 balls, not 19.4 decimal overs.
 
 ## Example
-Create teams `Falcons` and `Tigers`, then record:
-- Falcons: 165/7 in 20.0 overs
-- Tigers: 150/10 in 18.2 overs
 
-Falcons receive 2 points. Their NRR contribution is based on 165 runs in 20 overs; Tigers' all-out innings is treated as 20 overs for NRR.
+For a 20-over match:
 
-## Scope / assumptions
-This starter engine records completed innings totals, not individual ball-by-ball events. Extras are included in the innings total. Super overs, rain-revised DLS targets, bonus points, and player-level scorecards are not implemented.
+| Team | Score |
+|---|---:|
+| Falcons | 165/7 (20.0 overs) |
+| Tigers | 150/10 (18.2 overs) |
+
+**Result:** Falcons win by 15 runs.
+
+| Team | Played | Won | Lost | Points | NRR |
+|---|---:|---:|---:|---:|---:|
+| Falcons | 1 | 1 | 0 | 2 | +0.750 |
+| Tigers | 1 | 0 | 1 | 0 | -0.750 |
+
+## Points System
+
+| Match Result | Points |
+|---|---:|
+| Win | 2 |
+| Tie | 1 each |
+| Loss | 0 |
+
+Teams are ranked by:
+1. Total points
+2. Net Run Rate
+3. Team name (alphabetical)
+
+## Scope
+
+This application records completed innings summaries rather than ball-by-ball events. Extras are included in innings totals.
+
+Super overs, DLS adjustments, bonus points, no-result processing, and player-level scorecards are outside the current implementation. Repeat fixtures are permitted.
+
+---
+
+**Built with Java 17 and Maven.**
